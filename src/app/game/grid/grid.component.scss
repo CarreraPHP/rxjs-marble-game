@@ -1,0 +1,23 @@
+.grid {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 4px;
+    background-color: black;
+    width: 34rem;
+}
+
+.grid-column {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+    // background-color: burlywood;    
+    // margin: 0 2px;
+}
+
+.grid-cell {
+    width: 3rem;
+    height: 3rem;
+    margin: 2px;
+    border: 1px solid red;
+    border-radius: 0.25rem;
+}

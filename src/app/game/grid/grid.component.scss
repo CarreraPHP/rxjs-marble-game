@@ -3,13 +3,17 @@
     flex-direction: row-reverse;
     gap: 4px;
     background-color: black;
-    width: 34rem;
+    width: 16.25rem;
+    overflow: hidden;
+    height: 16.25rem;
 }
 
 .grid-column {
+    margin: -3.25rem 0 0;
     display: flex;
     flex-direction: column-reverse;
     gap: 4px;
+    height: 19.5rem;
     // background-color: burlywood;    
     // margin: 0 2px;
 }
@@ -18,6 +22,14 @@
     width: 3rem;
     height: 3rem;
     margin: 2px;
-    border: 1px solid red;
+    // border: 1px solid red;
+    background-color: hsla(359, 56%, 40%, 0.8);
     border-radius: 0.25rem;
+    offset-path: path('m 24,24 v 48');
+    animation: move-columns 900ms infinite linear;
+}
+
+.grid-cellcontent {
+    transform: rotateZ(-90deg) skew(-2deg) translateX(-0.25rem) translateY(-0.25rem);
+    display: block;
 }

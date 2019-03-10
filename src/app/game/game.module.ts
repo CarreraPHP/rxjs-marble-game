@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 
 import { MatButtonModule, MatCheckboxModule } from '@angular/material';
 
@@ -9,6 +9,7 @@ import { GridComponent } from './grid/grid.component';
 
 @NgModule({
 	declarations: [ CanvasComponent, GridComponent ],
+	providers: [PercentPipe],
 	imports: [ CommonModule, MatButtonModule, MatCheckboxModule, GameRoutingModule ],
 	exports: [ CanvasComponent, GridComponent ]
 })

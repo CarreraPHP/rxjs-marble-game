@@ -25,8 +25,20 @@
     // border: 1px solid red;
     background-color: hsla(359, 56%, 40%, 0.8);
     border-radius: 0.25rem;
-    offset-path: path('m 24,24 v 48');
+    offset-path: path('m 24,24 h 48');
+    
+    // infinite
+    // box-shadow: inset 10px 10px 1px grey;
+}
+
+.animate {
     animation: move-columns 900ms infinite linear;
+    z-index: 100;
+
+    &.stale, .stale {
+        animation: none;
+        z-index: 200;
+    }
 }
 
 .grid-cellcontent {

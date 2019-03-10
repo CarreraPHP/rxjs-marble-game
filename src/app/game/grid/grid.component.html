@@ -1,7 +1,14 @@
-<div class="grid">
-  <div class="grid-column" *ngFor="let col of grid">
-    <div class="grid-cell" *ngFor="let cell of col">
-      <span class="grid-cellcontent">{{cell}}</span>
+<div class="grid" [style.width.rem]="gridSize.w" [style.height.rem]="gridSize.h">
+  <div class="grid-column" [style.height.rem]="gridSize.ch" *ngFor="let col of grid; index as i;">
+    <!-- {{i}} -->
+    <div class="grid-cell" 
+      [style.backgroundColor]="getGridCellBackgroundColor(i, j)" 
+      [style.margin.rem]="0.125" 
+      [style.offsetPath]="gridCellOffsetPath" 
+      [class.animate]="canAnimate(i, j)" [class.stale]="isStale(i, j)"
+      *ngFor="let cell of col; index as j;">
+        <!-- {{j}} -->
+      <span class="grid-cellcontent"></span>
     </div>   
   </div>
 </div>

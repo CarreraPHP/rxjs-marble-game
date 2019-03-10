@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ElementRef } from '@angular/core';
 import { AppService, ScreenSize } from './app.service';
 
 @Component({
@@ -7,7 +7,6 @@ import { AppService, ScreenSize } from './app.service';
 	styleUrls: [ './app.component.scss' ]
 })
 export class AppComponent {
-	title = 'rxjs-marble-game';
 
 	@HostListener('window:resize', [ '$event' ])
 	onWinResize(event?) {
@@ -15,7 +14,8 @@ export class AppComponent {
 		this.appService.scrnMetrics = <ScreenSize>{ h: innerHeight, w: innerWidth };
 	}
 
-	constructor(private appService: AppService) {
+	constructor(private appService: AppService, private elRef:ElementRef) {
+		this.appService.appElementRef = elRef;
 		this.onWinResize();
 	}
 }

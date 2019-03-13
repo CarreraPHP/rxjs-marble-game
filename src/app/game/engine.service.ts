@@ -28,6 +28,7 @@ export class currentActor implements Actor {
     let row = [];
     for (let i = 0; i < sa.struct.length; i++) {
       row = [...row, sa.struct[i]];
+      // it is expected to value the string length in the multiples of slice values.
       if ((i + 1) % sa.slice === 0) {
         ret.struct = [...ret.struct, [...row]];
         row = [];

@@ -1,7 +1,9 @@
-import { Injectable } from "@angular/core";
-import { AppService } from "../app.service";
-import { ReplaySubject, Observable } from "rxjs";
-import { EngineService, GameStatus } from "./engine.service";
+import { Injectable } from '@angular/core';
+import { AppService } from '../app.service';
+import { ReplaySubject, Observable } from 'rxjs';
+import { EngineService, GameStatus } from './engine.service';
+
+const { requestAnimationFrame, cancelAnimationFrame } = window;
 
 /**
  * Possible Random Values for Hue between 0 to 399
@@ -18,118 +20,134 @@ import { EngineService, GameStatus } from "./engine.service";
  * 6, 216, 113, 132, 68, 166
  */
 export enum Hues {
-  FIRST = 6,
-  SECOND = 63,
-  THIRD = 181,
-  FOURTH = 275,
-  FIFTH = 353,
-  SIXTH = 118,
-  SEVENTH = 311,
-  EIGHTH = 213
+	FIRST = 6,
+	SECOND = 63,
+	THIRD = 181,
+	FOURTH = 275,
+	FIFTH = 353,
+	SIXTH = 118,
+	SEVENTH = 311,
+	EIGHTH = 213
 }
 
 export const HueList: Hues[] = [
-  Hues.FIRST,
-  Hues.SECOND,
-  Hues.THIRD,
-  Hues.FOURTH,
-  Hues.FIFTH,
-  Hues.SIXTH,
-  Hues.SEVENTH,
-  Hues.EIGHTH
+	Hues.FIRST,
+	Hues.SECOND,
+	Hues.THIRD,
+	Hues.FOURTH,
+	Hues.FIFTH,
+	Hues.SIXTH,
+	Hues.SEVENTH,
+	Hues.EIGHTH
 ];
 
 export interface HSLA {
-  h: number;
-  s: number;
-  l: number;
-  a: number;
+	h: number;
+	s: number;
+	l: number;
+	a: number;
 }
 
 export enum Animate {
-  NO,
-  YES,
-  STALE
+	NO,
+	YES,
+	STALE
 }
 
 export interface ColorProps {
-  hsla: HSLA;
-  anim: Animate;
+	hsla: HSLA;
+	anim: Animate;
 }
 
 @Injectable({
-  providedIn: "root"
+	providedIn: 'root'
 })
 export class ColorService {
-  private _gameStatus: GameStatus;
-  // hsla(185, 56%, 40%, 0.8)
-  private _colorGrid: ColorProps[][];
-  private _colorGrid$: ReplaySubject<ColorProps[][]> = new ReplaySubject(1);
+  private _animId: number;
+	private _gameStatus: GameStatus;
+	// hsla(185, 56%, 40%, 0.8)
+	private _colorGrid: ColorProps[][];
+	private _colorGrid$: ReplaySubject<ColorProps[][]> = new ReplaySubject(1);
 
-  public blankHsla: HSLA = { h: 0, s: 0, l: 0, a: 0 };
+	public blankHsla: HSLA = { h: 0, s: 0, l: 0, a: 0 };
 
-  get randomHue(): number {
-    return HueList[Math.floor(Math.random() * (HueList.length - 0) + 0)];
-  }
+	get randomHue(): number {
+		return HueList[Math.floor(Math.random() * (HueList.length - 0) + 0)];
+	}
 
-  get cellCnt(): number {
-    return this.appService.cellCnt;
-  }
+	get cellCnt(): number {
+		return this.appService.cellCnt;
+	}
 
-  get visibleCellCnt(): number {
-    return this.cellCnt - 1;
-  }
+	get visibleCellCnt(): number {
+		return this.cellCnt - 1;
+	}
 
-  get colCnt(): number {
-    return this.appService.colCnt;
-  }
+	get colCnt(): number {
+		return this.appService.colCnt;
+	}
 
-  get colorGridObservable(): Observable<ColorProps[][]> {
-    return this._colorGrid$.asObservable();
-  }
+	get colorGridObservable(): Observable<ColorProps[][]> {
+		return this._colorGrid$.asObservable();
+	}
 
-  get canAnimate(): boolean {
-    return this._gameStatus === GameStatus.START || GameStatus.STARTED
-      ? true
-      : false;
-  }
+	get canAnimate(): boolean {
+		return this._gameStatus === GameStatus.START || this._gameStatus === GameStatus.STARTED ? true : false;
+	}
 
-  constructor(
-    private appService: AppService,
-    private gameEngine: EngineService
-  ) {
-    this.subscribeAllEngineObservables();
-  }
+	constructor(private appService: AppService, private gameEngine: EngineService) {
+		this.subscribeAllEngineObservables();
+	}
 
-  private subscribeAllEngineObservables() {
-    this.gameEngine.gameStatusObservable.subscribe((status: GameStatus) => {
-      this._gameStatus = status;
-    });
-  }
-
-  public setHsla(hue: Hues): HSLA {
-    return { h: hue, s: 0.56, l: 0.4, a: 0.8 };
-  }
-
-  public populateColorGrid(): ColorProps[][] {
-    let ret: ColorProps[][] = [];
-    for (let i = 0; i < this.colCnt; i++) {
-      for (let j = 0, col: ColorProps[] = []; j < this.cellCnt; j++) {
-        col = [
-          ...col,
-          ...[
-            {
-              hsla: { ...this.setHsla(this.randomHue) }, // this.blankHsla,
-              anim: Animate.NO
-            }
-          ]
-        ];
-        if (j == this.cellCnt - 1) {
-          ret = [...ret, ...[col]];
-        }
+	private subscribeAllEngineObservables() {
+		this.gameEngine.gameStatusObservable.subscribe((status: GameStatus) => {
+			this._gameStatus = status;
+			console.log('observables', status, this._gameStatus, this.canAnimate);
+			if (this.canAnimate) {
+				this._animId = requestAnimationFrame(() => {
+					this.loopAnimation();
+				});
+			} else {
+        cancelAnimationFrame(this._animId);
       }
+		});
+	}
+
+	public setHsla(hue: Hues): HSLA {
+		return { h: hue, s: 0.56, l: 0.4, a: 0.8 };
+	}
+
+	public populateColorGrid(shouldAnimate: boolean = false): ColorProps[][] {
+		let ret: ColorProps[][] = [];
+		for (let i = 0; i < this.colCnt; i++) {
+			for (let j = 0, col: ColorProps[] = []; j < this.cellCnt; j++) {
+				col = [
+					...col,
+					...[
+						{
+							hsla: { ...this.setHsla(this.randomHue) }, // this.blankHsla,
+							anim: Animate.NO // shouldAnimate ? Animate.YES : Animate.NO
+						}
+					]
+				];
+				if (j == this.cellCnt - 1) {
+					ret = [ ...ret, ...[ col ] ];
+				}
+			}
+		}
+		this._colorGrid$.next(ret);
+		return (this._colorGrid = ret);
+	}
+
+	public loopAnimation() {
+    // console.log("Runing in a loop", );
+    this.populateColorGrid(this.canAnimate);
+		if (this.canAnimate) {
+			this._animId = requestAnimationFrame(() => {
+				this.loopAnimation();
+			});
+		} else {
+      cancelAnimationFrame(this._animId);
     }
-    this._colorGrid$.next(ret);
-    return (this._colorGrid = ret);
-  }
+	}
 }

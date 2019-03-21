@@ -46,6 +46,7 @@ export class GridComponent implements OnInit {
 		private cdRef: ChangeDetectorRef,
 		private percentPipe: PercentPipe
 	) {
+		this.subscribleAllColorObservables();
 		this.grid = this.canvasEngine.populateGrid();
 		this.colorGrid = this.colorEngine.populateColorGrid();
 		this.handleRemChange();
@@ -54,9 +55,10 @@ export class GridComponent implements OnInit {
 	}
 
 	subscribleAllColorObservables() {
-		const {colorGridObservable} = this.colorEngine;
-		colorGridObservable.subscribe(cgrid => {
+		this.colorEngine.colorGridObservable.subscribe(cgrid => {
+			// console.log("grid changeing ");
 			this.colorGrid = cgrid;
+			this.cdRef.markForCheck();
 		})
 	}
 

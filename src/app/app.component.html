@@ -4,6 +4,10 @@
             <mat-icon>menu</mat-icon>
         </button>
         <h1 class="app-title">rxjs MARBLE game</h1>
+        <span class="filler"></span>
+        <button mat-raised-button (click)="triggerStart()">
+            {{ canShowStart ?  'start' : 'end' }}
+        </button>
     </mat-toolbar>
             
     <mat-sidenav-container class="content-container">

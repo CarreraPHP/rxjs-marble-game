@@ -64,6 +64,7 @@ export class GridComponent implements OnInit {
 
 	canAnimate(i: number, j: number): boolean {
 		const { anim } = this.colorGrid[i][j];
+		// console.log("i, j, anim", i, j, anim);
 		return anim === Animate.YES ? true : false;
 	}
 

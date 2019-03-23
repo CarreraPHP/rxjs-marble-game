@@ -63,10 +63,11 @@ export interface ColorProps {
 	providedIn: 'root'
 })
 export class ColorService {
-  private _animId: number;
+	private _animId: number;
 	private _gameStatus: GameStatus;
 	// hsla(185, 56%, 40%, 0.8)
 	private _colorGrid: ColorProps[][];
+	private _baseColorGrid: ColorProps[][]; //reference of initial structure captured once.
 	private _colorGrid$: ReplaySubject<ColorProps[][]> = new ReplaySubject(1);
 
 	public blankHsla: HSLA = { h: 0, s: 0, l: 0, a: 0 };
@@ -108,8 +109,8 @@ export class ColorService {
 					this.loopAnimation();
 				});
 			} else {
-        cancelAnimationFrame(this._animId);
-      }
+				cancelAnimationFrame(this._animId);
+			}
 		});
 	}
 
@@ -126,7 +127,7 @@ export class ColorService {
 					...[
 						{
 							hsla: { ...this.setHsla(this.randomHue) }, // this.blankHsla,
-							anim: Animate.NO // shouldAnimate ? Animate.YES : Animate.NO
+							anim: Animate.STALE // shouldAnimate ? Animate.YES : Animate.NO
 						}
 					]
 				];
@@ -136,18 +137,50 @@ export class ColorService {
 			}
 		}
 		this._colorGrid$.next(ret);
+		this._baseColorGrid = ret;
+		this._colorGrid = ret;
+		return ret;
+	}
+
+	/**
+   * rotate color grid method tries to rotate the color from top to bottom.
+   * 
+   * 
+   * @param shouldAnimate boolean to control animation.
+   */
+	public rotateColorGrid(shouldAnimate: boolean = false): ColorProps[][] {
+		let cgrid: ColorProps[][] = this._colorGrid;
+		let ret: ColorProps[][] = [];
+		for (let i = 0; i < this.colCnt; i++) {
+			let col: ColorProps[] = [];
+			const first = cgrid[i].splice(0, 1).map((props: ColorProps) => {
+				return {
+					...props,
+					anim: Animate.YES
+				};
+			});
+			const last = cgrid[i].splice(this.cellCnt - 1, 1).map((props: ColorProps) => {
+				return {
+					...props,
+					anim: Animate.NO
+				};
+			});
+			col = [ ...cgrid[i], ...last, ...first ];
+			ret = [ ...ret, ...[ col ] ];
+		}
+		this._colorGrid$.next(ret);
 		return (this._colorGrid = ret);
 	}
 
 	public loopAnimation() {
-    // console.log("Runing in a loop", );
-    this.populateColorGrid(this.canAnimate);
+		// console.log("Runing in a loop", );
+		this.rotateColorGrid(this.canAnimate);
 		if (this.canAnimate) {
 			this._animId = requestAnimationFrame(() => {
 				this.loopAnimation();
 			});
 		} else {
-      cancelAnimationFrame(this._animId);
-    }
+			cancelAnimationFrame(this._animId);
+		}
 	}
 }

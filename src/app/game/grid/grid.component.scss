@@ -32,7 +32,7 @@
 }
 
 .animate {
-    animation: move-columns 900ms infinite linear;
+    animation: move-columns 30ms linear; // infinite removed.
     z-index: 100;
 
     &.stale, .stale {

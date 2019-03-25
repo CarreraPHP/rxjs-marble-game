@@ -53,7 +53,8 @@ export class AppComponent implements OnInit {
 			this.handleScreenMetrics(el.offsetHeight, el.offsetWidth);
 			this.onResize$.next(el);
 		});
-		this.handleScreenMetrics(innerHeight - this.minHeaderSize.h, innerWidth);
+		// this.handleScreenMetrics(innerHeight - this.minHeaderSize.h, innerWidth);
+		window.dispatchEvent(new Event('resize'));
 	}
 
 	observeContentArea() {

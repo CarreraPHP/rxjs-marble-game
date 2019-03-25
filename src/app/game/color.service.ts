@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AppService } from '../app.service';
-import { ReplaySubject, Observable } from 'rxjs';
+import { ReplaySubject, Observable, Subject, timer } from 'rxjs';
 import { EngineService, GameStatus } from './engine.service';
+import { debounce, debounceTime, throttleTime } from 'rxjs/operators';
 
 const { requestAnimationFrame, cancelAnimationFrame } = window;
 
@@ -24,10 +25,10 @@ export enum Hues {
 	SECOND = 63,
 	THIRD = 181,
 	FOURTH = 275,
-	FIFTH = 353,
-	SIXTH = 118,
-	SEVENTH = 311,
-	EIGHTH = 213
+	// FIFTH = 353,
+	// SIXTH = 118,
+	// SEVENTH = 311,
+	// EIGHTH = 213
 }
 
 export const HueList: Hues[] = [
@@ -35,10 +36,10 @@ export const HueList: Hues[] = [
 	Hues.SECOND,
 	Hues.THIRD,
 	Hues.FOURTH,
-	Hues.FIFTH,
-	Hues.SIXTH,
-	Hues.SEVENTH,
-	Hues.EIGHTH
+	// Hues.FIFTH,
+	// Hues.SIXTH,
+	// Hues.SEVENTH,
+	// Hues.EIGHTH
 ];
 
 export interface HSLA {
@@ -69,6 +70,7 @@ export class ColorService {
 	private _colorGrid: ColorProps[][];
 	private _baseColorGrid: ColorProps[][]; //reference of initial structure captured once.
 	private _colorGrid$: ReplaySubject<ColorProps[][]> = new ReplaySubject(1);
+	private _gameloop$: Subject<String> = new Subject();
 
 	public blankHsla: HSLA = { h: 0, s: 0, l: 0, a: 0 };
 
@@ -98,6 +100,7 @@ export class ColorService {
 
 	constructor(private appService: AppService, private gameEngine: EngineService) {
 		this.subscribeAllEngineObservables();
+		this.handleGameloop();
 	}
 
 	private subscribeAllEngineObservables() {
@@ -173,8 +176,8 @@ export class ColorService {
 	}
 
 	public loopAnimation() {
-		// console.log("Runing in a loop", );
-		this.rotateColorGrid(this.canAnimate);
+		// console.log("Runing in a animation loop");
+		this._gameloop$.next("next");
 		if (this.canAnimate) {
 			this._animId = requestAnimationFrame(() => {
 				this.loopAnimation();
@@ -182,5 +185,14 @@ export class ColorService {
 		} else {
 			cancelAnimationFrame(this._animId);
 		}
+	}
+
+	handleGameloop() {
+		let i = 0;
+		const debouncedLoop = this._gameloop$.pipe(throttleTime(5000));
+		debouncedLoop.subscribe(() => {
+			console.log("Runing in a loop", ++i);
+			this.rotateColorGrid(this.canAnimate);
+		});
 	}
 }

@@ -16,8 +16,8 @@ export interface GridSize extends ScreenSize {
 })
 export class AppService {
   cellHeight: number = 3.25;
-  cellCnt: number = 60; // always have plus one cell to show animation.
-  colCnt: number = 30;
+  cellCnt: number = 18; // always have plus one cell to show animation.
+  colCnt: number = 12;
   private _gridSize: number;
   private _colSize: number = 19.5;
   private _fontSize: number = 16;

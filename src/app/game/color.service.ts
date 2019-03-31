@@ -189,7 +189,7 @@ export class ColorService {
 
 	handleGameloop() {
 		let i = 0;
-		const debouncedLoop = this._gameloop$.pipe(throttleTime(5000));
+		const debouncedLoop = this._gameloop$.pipe(throttleTime(1250));
 		debouncedLoop.subscribe(() => {
 			console.log("Runing in a loop", ++i);
 			this.rotateColorGrid(this.canAnimate);

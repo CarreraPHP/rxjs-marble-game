@@ -17,6 +17,8 @@
 
 ```ng g c game/grid --flat false --module game --prefix rmg --export --change-detection OnPush```
 
+```ng g c game/pad --flat false --module game --prefix rmg --export --change-detection OnPush```
+
 ```ng g s app```
 
 ```ng g s game/engine```

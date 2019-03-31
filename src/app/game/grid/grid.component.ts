@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Sanitizer, ChangeDetectorRef, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, ChangeDetectorRef, LOCALE_ID } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { AppService, ScreenSize, GridSize } from '../../app.service';
 import { EngineService, GameStatus } from '../engine.service';
@@ -10,7 +10,8 @@ import { PercentPipe } from '@angular/common';
 	selector: 'rmg-grid',
 	templateUrl: './grid.component.html',
 	styleUrls: [ './grid.component.scss' ],
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	encapsulation: ViewEncapsulation.None
 })
 export class GridComponent implements OnInit {
 	grid: string[][] = [];
@@ -30,7 +31,7 @@ export class GridComponent implements OnInit {
 	get gridCellOffsetPath(): SafeStyle {
 		const m = this.rem * 1.5;
 		const v = this.rem * 3;
-		return this.sanitizer.bypassSecurityTrustStyle(`path('m ${m}, ${m} v ${v}')`);
+		return this.sanitizer.bypassSecurityTrustStyle(`path('m ${m}, ${m} v ${v} z')`);
 	}
 
 	get randomHue(): number {

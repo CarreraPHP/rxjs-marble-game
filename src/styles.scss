@@ -4,8 +4,11 @@
     0% {
         offset-distance: 0;
     }
-    99% {
-        offset-distance: 100%;
+    30% {
+        offset-distance: 50%;
+    }
+    70% {
+        offset-distance: 50%;
     }
     100% {
         offset-distance: 100%;
@@ -21,3 +24,6 @@ body {
 	font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+.debugger-content {
+    z-index: 2000;
+}
